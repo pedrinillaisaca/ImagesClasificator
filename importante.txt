@@ -1,0 +1,107 @@
+CAMBIAR VERSION DE COMPILADOR
+https://www.bojankomazec.com/2020/03/upgrading-gnu-cc-compilers-on-ubuntu.html
+
+std::filesystem::__cxx11::filesystem_error'
+
+quitado de makefilee
+
+
+
+conversion de bgr a hsv CV_BGR2HSV
+
+
+
+vector<string> Compare::listarDirectorio(string dir){
+    vector<string> lista;  
+    DIR *pDir = opendir(dir.c_str());
+
+    struct dirent *entrada;
+    while((entrada=readdir(pDir))!=NULL){
+        //cout << entrada->d_name << endl;
+        // entrada->d_type;    
+        lista.push_back(string(entrada->d_name));        
+    }   
+    closedir(pDir);
+
+    //line 21 no tiene que ir en el return
+    //lista.erase (lista.begin(),lista.begin()+2);//recorta los 2 primeras posiciones del vector
+
+    //estos metodos estan puestos de esta forma porque esos puntos aparecen en cualquier posicion que vaina hay que poner incluso en un orden especifico.
+    ptrdiff_t pos1 = distance(lista.begin(), find(lista.begin(), lista.end(), "."));//index donde estara esos puntos molestos
+    lista.erase(lista.begin()+pos1);
+    ptrdiff_t pos2 = distance(lista.begin(), find(lista.begin(), lista.end(), ".."));
+    lista.erase(lista.begin()+pos2);
+    return lista;
+}
+
+int Compare::recolectarImagenes(string ruta){    
+    //cout<<ruta<<endl;
+    this->listaImagenes.push_back(ruta.c_str());//si esta almacenandoce las rutas    
+    return 0;
+}
+
+
+void Compare::conversiones(){
+    // Para leer la imagen se coloca el nombre y el modo de carga (original, escala de grises)
+    cout<<"CONVERSION"<<endl;
+    cout<<this->listaImagenes.size()<<endl;
+    
+   
+    for(int i=0;i<this->listaImagenes.size();i++){ 
+        
+        try{       
+            cout<<"===================>"<<this->listaImagenes[i].c_str()<<"<========"<<"indice:"<<i<<endl;        
+            Mat imagen = imread(this->listaImagenes[i].c_str(), IMREAD_UNCHANGED);//carga de la imagen 
+            //Mat bgr;//matriz para convertir a bgr
+            Mat hsv;//matris que recibira el formato hsv            
+            cvtColor(imagen, imagen,COLOR_RGB2BGR);    
+            cvtColor(imagen, hsv, COLOR_BGR2HSV);
+                
+            vector<Mat> canalesBGR;
+            vector<Mat> canalesHSV;
+            // La función split toma cada canal sde una imagen a colores y lo guarda como una matriz en el arreglo dinámico pasado como parámetro
+            split(imagen, canalesBGR);
+            split(hsv, canalesHSV);
+                    
+            // Cómo calcular el histograma de una imagen a color empleando funciones de OpenCV
+            // Definimos el rango de niveles de intensidad
+            float rango[] = {0, 256};
+            const float *rangoHistograma = {rango};
+            Mat histoB; // Aquí se guardará el histograma del canal Azul como una matriz de una sola columna y n filas
+            Mat histoG;
+            Mat histoR;
+            int tam = 256;
+            // Función de OpenCV para calcular el histograma (permite calcular el histograma de un conjunto de imágenes)
+            calcHist(&canalesBGR[0],1,0,Mat(),histoB,1,&tam,&rangoHistograma,true,false);
+            calcHist(&canalesBGR[1],1,0,Mat(),histoG,1,&tam,&rangoHistograma,true,false);
+            calcHist(&canalesBGR[2],1,0,Mat(),histoR,1,&tam,&rangoHistograma,true,false);    
+            
+            Mat histoH; // Aquí se guardará el histograma del canal Azul como una matriz de una sola columna y n filas
+            Mat histoS;
+            Mat histoV;
+
+            calcHist(&canalesHSV[0],1,0,Mat(),histoH,1,&tam,&rangoHistograma,true,false);
+            calcHist(&canalesHSV[1],1,0,Mat(),histoS,1,&tam,&rangoHistograma,true,false);
+            calcHist(&canalesHSV[2],1,0,Mat(),histoV,1,&tam,&rangoHistograma,true,false);   
+        
+        /**/  
+
+         }catch(cv::Exception){//control de error cuando se pasa un dierctorio vacio
+            cout<<"ERROR CONTROLADO JEJE"<<endl;
+        }  
+    }
+}
+
+void Compare::fusionTest(string pathTest){
+    vector<string> dirGeneral=this->listarDirectorio(pathTest.c_str());
+
+    cout<<"tamaño del vector: "<<dirGeneral.size()<<endl;         
+    for (size_t i=0;dirGeneral.size();i++){
+        //cout<<"|"<<dirGeneral[i]<<"|"<<endl;
+        vector<string> aux=this->listarDirectorio("test/"+dirGeneral[i]);
+        cout<<"directorio: "<<dirGeneral[i]<<" tamaño: "<<aux.size()<<endl;
+    }   
+
+    //delete dirGeneral; 
+}
+
