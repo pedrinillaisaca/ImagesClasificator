@@ -24,13 +24,14 @@ map < string , double > Compare::distanciasGeneralesBGR(map<string, map<string, 
     map< string,double> mapaF;
     for(const auto& index : generalMap) {
         //cout << index.first << endl;
-        mapaF[index.first]=this->media(index.second);
+        mapaF[index.first]=this->media(index.second);//ENVIO LOS TRAIN Y TEST DE CADA CLASE O DORECTORIO, CALCULO LA DISTACIA DE LA CLASE Y ALMACENO EN UN MAPA (STRING, DOUBLE)
     }
-    cout<< "distanciasGeneralesBGR OK"<<endl;
+    //cout<< "distanciasGeneralesBGR OK"<<endl;
     return mapaF;
 }
 
 double  Compare::media(map< string , list<string> > mapa){
+    //SEPARACION DE LOS APARTADOS
     list<string> test=mapa["TEST"];
     list<string> train=mapa["TRAIN"];
     list<string>::iterator it = test.begin();
@@ -76,23 +77,24 @@ double  Compare::media(map< string , list<string> > mapa){
             } 
 
         }catch(cv::Exception){//control de error cuando se pasa un dierctorio vacio
-            cout<<"ERROR CONTROLADO JEJE"<<endl;
+            cout<<"cv::Exception"<<endl;
         } 
-    cout<< "media OK"<<endl;              
-    return distancia/test.size();
+    //cout<< "media OK"<<endl;              
+    return distancia/test.size();//PROMEDIO DE LAS DISTANCIAS DE POR CADA CLASE 
 }
 
 double Compare::calcularDistancia(vector<Mat> canales_Test,vector<Mat> canales_Train){
     
     double d=0.0;
-    for (size_t i=0;i<3;i++){
+    for (size_t i=0;i<canales_Test.size();i++){//TODOS LOS ESPACIOS DE COLORES vector<Mat> TIENEN 3 POCIONES
         d+=this->calcDistForCanal(canales_Test[i],canales_Train[i]);
     }
     //cout<< "calcularDistancia OK"<<endl;
     return d;
 }
 
-double Compare::calcDistForCanal(Mat canales_Test,Mat canales_Train ){
+double Compare::calcDistForCanal(Mat canales_Test,Mat canales_Train ){//CUANDO SE TRABAJA CON HISTOGRAMAS SE HABLA DE UNA MATRIS DE UNA COLUMNA DE N FILA
+    //ENCADA INTERACION DE ESTE METODO SE CALCULA LA DISTANCIA 
     double sum=0;    
     for(size_t i=0;i<canales_Test.rows;i++){
         sum+=pow( (double)canales_Test.at<uchar>(i,0) -   (double)canales_Train.at<uchar>(i,0) , 2 );
@@ -110,15 +112,15 @@ map < string , bool > Compare::aciertosFallosBGR(map<string, map<string, list<st
     list<string>::iterator it = subListTrain.begin();
     map<string,bool>::iterator it_assert = retorno.begin();
             
-    float rango[] = {0, 256};
+    /* float rango[] = {0, 256};
     const float *rangoHistograma = {rango};       
     Mat histoB; // Aquí se guardará el histograma del canal Azul como una matriz de una sola columna y n filas
     Mat histoG;
     Mat histoR;
-    int tam = 256;
+    int tam = 256; */
 
     vector<Mat> canalesBGR_Test;
-    vector<Mat> canalesBGR_Train;
+    //vector<Mat> canaesBGR_Train;
     
     for(const auto& level1 : test) {
         //cout << level1.first << endl;                
@@ -168,7 +170,7 @@ bool Compare::compararAllTrain(vector<Mat> canalesBGR_Test,map< string, list<str
             calcHist(&canalesBGR_Train[1],1,0,Mat(),histoG,1,&tam,&rangoHistograma,true,false);
             calcHist(&canalesBGR_Train[2],1,0,Mat(),histoR,1,&tam,&rangoHistograma,true,false);  
 
-            distancia+=this->calcularDistancia(canalesBGR_Test,canalesBGR_Train);           
+            distancia=this->calcularDistancia(canalesBGR_Test,canalesBGR_Train);//OJO AQUI!!!!!!!
             fin=verificarClase(distancia,claseTest,distanciasGeneralesBGR);
         }
         
@@ -211,18 +213,18 @@ vector<Mat> Compare::calcularHistBGR(string img){
         int tam = 256;
         // Función de OpenCV para calcular el histograma (permite calcular el histograma de un conjunto de imágenes)
         calcHist(&canalesBGR[0],1,0,Mat(),histoB,1,&tam,&rangoHistograma,true,false);
-        //calcHist(&canalesBGR[1],1,0,Mat(),histoG,1,&tam,&rangoHistograma,true,false);
-        //calcHist(&canalesBGR[2],1,0,Mat(),histoR,1,&tam,&rangoHistograma,true,false);    
+        calcHist(&canalesBGR[1],1,0,Mat(),histoG,1,&tam,&rangoHistograma,true,false);
+        calcHist(&canalesBGR[2],1,0,Mat(),histoR,1,&tam,&rangoHistograma,true,false);    
 
     }catch(cv::Exception){//control de error cuando se pasa un dierctorio vacio
-        cout<<"ERROR CONTROLADO JEJE"<<endl;
+        cout<<"cv::Exception"<<endl;
     } 
     
     return canalesBGR;
 }
 
 
-vector<Mat> Compare::calcularHistHSV(string img){//PASAR COMO PARAMETRO LA IMAGEN PARA CONVERTIDA EN EL ESPACIO DE COLOR 
+/* vector<Mat> Compare::calcularHistHSV(string img){//PASAR COMO PARAMETRO LA IMAGEN PARA CONVERTIDA EN EL ESPACIO DE COLOR 
     vector<Mat> canalesHSV;
     try{
         Mat imagen = imread(img, IMREAD_UNCHANGED);//carga img
@@ -246,7 +248,7 @@ vector<Mat> Compare::calcularHistHSV(string img){//PASAR COMO PARAMETRO LA IMAGE
         } 
     
     return canalesHSV;
-}
+} */
 
 map<string, map<string, list<string> > > Compare::transFormar(map<string, map<string, list<string> > > generalMap){
     map< string, map< string, list<string> > > nuevoMapa;

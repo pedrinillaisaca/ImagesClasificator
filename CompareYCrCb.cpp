@@ -26,7 +26,7 @@ map < string , double > CompareYCrCb::distanciasGeneralesBGR(map<string, map<str
         //cout << index.first << endl;
         mapaF[index.first]=this->media(index.second);
     }
-    cout<< "distanciasGeneralesBGR OK"<<endl;
+    //cout<< "distanciasGeneralesBGR OK"<<endl;
     return mapaF;
 }
 
@@ -76,9 +76,9 @@ double  CompareYCrCb::media(map< string , list<string> > mapa){
             } 
 
         }catch(cv::Exception){//control de error cuando se pasa un dierctorio vacio
-            cout<<"ERROR CONTROLADO JEJE"<<endl;
+            cout<<"cv::Exception"<<endl;
         } 
-    cout<< "media OK"<<endl;              
+    //cout<< "media OK"<<endl;              
     return distancia/test.size();
 }
 
@@ -110,28 +110,13 @@ map < string , bool > CompareYCrCb::aciertosFallosBGR(map<string, map<string, li
     list<string>::iterator it = subListTrain.begin();
     map<string,bool>::iterator it_assert = retorno.begin();
             
-    float rango[] = {0, 256};
-    const float *rangoHistograma = {rango};       
-    Mat histoB; // Aquí se guardará el histograma del canal Azul como una matriz de una sola columna y n filas
-    Mat histoG;
-    Mat histoR;
-    int tam = 256;
-
     vector<Mat> canalesBGR_Test;
-    vector<Mat> canalesBGR_Train;
     
     for(const auto& level1 : test) {
         //cout << level1.first << endl;                
         for(const auto& level2 : level1.second) {            
 
-            canalesBGR_Test=calcularHistBGR(level2);
-            /* Mat imgTest = imread(level2, IMREAD_COLOR);//carga img
-            cvtColor(imgTest, imgTest,COLOR_BGR2YCrCb);  
-                                
-            split(imgTest, canalesBGR_Test); 
-            calcHist(&canalesBGR_Test[0],1,0,Mat(),histoB,1,&tam,&rangoHistograma,true,false);
-            calcHist(&canalesBGR_Test[1],1,0,Mat(),histoG,1,&tam,&rangoHistograma,true,false);
-            calcHist(&canalesBGR_Test[2],1,0,Mat(),histoR,1,&tam,&rangoHistograma,true,false);   */
+            canalesBGR_Test=calcularHistBGR(level2);           
 
             /* ESPACIOS */ 
             bool prueba=compararAllTrain(canalesBGR_Test,train,distanciasGeneralesBGR,level1.first);//La imagen test sera comparada con todas las imagenes train
@@ -168,7 +153,7 @@ bool CompareYCrCb::compararAllTrain(vector<Mat> canalesBGR_Test,map< string, lis
             calcHist(&canalesBGR_Train[1],1,0,Mat(),histoG,1,&tam,&rangoHistograma,true,false);
             calcHist(&canalesBGR_Train[2],1,0,Mat(),histoR,1,&tam,&rangoHistograma,true,false);  
 
-            distancia+=this->calcularDistancia(canalesBGR_Test,canalesBGR_Train);           
+            distancia=this->calcularDistancia(canalesBGR_Test,canalesBGR_Train);           
             fin=verificarClase(distancia,claseTest,distanciasGeneralesBGR);
         }
         
@@ -211,17 +196,17 @@ vector<Mat> CompareYCrCb::calcularHistBGR(string img){
         int tam = 256;
         // Función de OpenCV para calcular el histograma (permite calcular el histograma de un conjunto de imágenes)
         calcHist(&canalesBGR[0],1,0,Mat(),histoB,1,&tam,&rangoHistograma,true,false);
-        //calcHist(&canalesBGR[1],1,0,Mat(),histoG,1,&tam,&rangoHistograma,true,false);
-        //calcHist(&canalesBGR[2],1,0,Mat(),histoR,1,&tam,&rangoHistograma,true,false);    
+        calcHist(&canalesBGR[1],1,0,Mat(),histoG,1,&tam,&rangoHistograma,true,false);
+        calcHist(&canalesBGR[2],1,0,Mat(),histoR,1,&tam,&rangoHistograma,true,false);    
 
     }catch(cv::Exception){//control de error cuando se pasa un dierctorio vacio
-        cout<<"ERROR CONTROLADO JEJE"<<endl;
+        cout<<"cv::Exception"<<endl;
     } 
     
     return canalesBGR;
 }
 
-
+/* 
 vector<Mat> CompareYCrCb::calcularHistHSV(string img){//PASAR COMO PARAMETRO LA IMAGEN PARA CONVERTIDA EN EL ESPACIO DE COLOR 
     vector<Mat> canalesHSV;
     try{
@@ -247,7 +232,7 @@ vector<Mat> CompareYCrCb::calcularHistHSV(string img){//PASAR COMO PARAMETRO LA 
     
     return canalesHSV;
 }
-
+ */
 map<string, map<string, list<string> > > CompareYCrCb::transFormar(map<string, map<string, list<string> > > generalMap){
     map< string, map< string, list<string> > > nuevoMapa;
     map< string, list<string> > subMapaTest;
