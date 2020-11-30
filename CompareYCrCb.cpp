@@ -76,7 +76,7 @@ double  CompareYCrCb::media(map< string , list<string> > mapa){
             } 
 
         }catch(cv::Exception){//control de error cuando se pasa un dierctorio vacio
-            cout<<"cv::Exception"<<endl;
+            
         } 
     //cout<< "media OK"<<endl;              
     return distancia/test.size();
@@ -200,7 +200,7 @@ vector<Mat> CompareYCrCb::calcularHistBGR(string img){
         calcHist(&canalesBGR[2],1,0,Mat(),histoR,1,&tam,&rangoHistograma,true,false);    
 
     }catch(cv::Exception){//control de error cuando se pasa un dierctorio vacio
-        cout<<"cv::Exception"<<endl;
+        
     } 
     
     return canalesBGR;

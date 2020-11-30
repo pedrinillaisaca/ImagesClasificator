@@ -18,10 +18,16 @@ int main(int argc, char *argv[]){
     double aciertosBGR=0.0;
     for(const auto& index : aciertosFallosBGR) {
         aciertosBGR+=(index.second==1)? 1.0:0.0;
-        //cout<<index.first<<" --> "<<index.second<<endl;
-    }  
+        //cout<<index.first<<" --> "<<index.second<<endl;    
+    }
+    cout<< "PROCESO CON ESPACIO DE COLOR BGR"  <<endl;  
+    cout<< "===================================================================="<<endl;
     cout<< "PrecisionBGR: " << aciertosBGR/aciertosFallosBGR.size()<<endl;
+    cout<< "Aciertos: " << aciertosBGR<<endl;
+    cout<< "Fallos: " << aciertosFallosBGR.size()-aciertosBGR<<endl;
+    cout<< "===================================================================="<<endl;
     delete c;
+
 /* */  
     // PROCESO CON ESPACIO DE COLOR HSV 
     cout<< "PROCESO CON ESPACIO DE COLOR HSV" <<endl;
@@ -37,7 +43,11 @@ int main(int argc, char *argv[]){
         aciertosHSV+=(index.second==1)? 1.0:0.0;
         //cout<<index.first<<" --> "<<index.second<<endl;
     } 
+    cout<< "===================================================================="<<endl;
     cout<< "PrecisionHSV: " << aciertosHSV/aciertosFallosHSV.size()<<endl;
+    cout<< "Aciertos: " << aciertosHSV<<endl;
+    cout<< "Fallos: " << aciertosFallosHSV.size()-aciertosHSV<<endl;
+    cout<< "===================================================================="<<endl;
     delete cH;  
       
     
@@ -55,7 +65,11 @@ int main(int argc, char *argv[]){
         aciertosYCrCb+=(index.second==1)? 1.0:0.0;
         //cout<<index.first<<" --> "<<index.second<<endl;
     } 
+    cout<< "===================================================================="<<endl;
     cout<< "Precision YCrCb: " << aciertosYCrCb/aciertosFallos.size()<<endl;
+    cout<< "Aciertos: " << aciertosYCrCb<<endl;
+    cout<< "Fallos: " << aciertosFallos.size()-aciertosYCrCb<<endl;
+    cout<< "===================================================================="<<endl;
     delete cY;  
 
   
